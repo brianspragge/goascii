@@ -46,17 +46,23 @@ class Board:
             }
         }
         self.star_points = {(4, 4), (4, 10), (10, 4), (10, 10), (7, 7)}  # Traditional 9x9 star points
+        # TODO: add ko detection
 
     def render(self):
         """Draws the goboard grid with correct stone placements."""
         style = self.style['grid']['thick']
-        rows = [f"{' '.join(str(i) for i in range(1, self.size + 1))}"]  # Header
+        rows = ' '.join(str(i) for i in range(1, 10))
+        if self.size > 9:
+            rows += ''.join(str(i) for i in range(10, self.size + 1))
+        rows = [rows]
+
         grid_pattern = []
 
-        # Top line
+        # Build board's top row: 123232324, 1 & 4 = corners, 2 = spaces, 3 = lines
+        # Look for captures around the border, since not implemented
         grid_pattern.append([1] + [2, 3] * (self.size - 2) + [2, 4])
 
-        # Middle lines
+        # Build board's middle row: 52
         for i in range(2, self.size):
             row_pattern = [5, 2]  # Left edge
             for j in range(2, self.size):
@@ -179,17 +185,17 @@ if __name__ == '__main__':
     black = True
     White = True
 
-    Running = True
+    running = True
     print("\033[30;47m")  # 30 = black text, 47 = White background
     try:
-        while Running:
+        while running:
             clear_console()
             print('broken program, please fix me', '\n')
             print(goban.render())
             if black:
-                user_input = input(f"{brian}'s turn, enter: x, y")
+                user_input = input(f"● {brian}'s turn, enter x,y: ")
                 if user_input == '':
-                    Running = False
+                    running = False
                     break
                 elif user_input == 'help':
                     user_input = input('What definition do you want help with?')
@@ -203,9 +209,9 @@ if __name__ == '__main__':
                 else:
                     print("Not Valid Move")
             elif White:
-                user_input = input(f"{ben}'s turn, enter: x, y")
+                user_input = input(f"○ {ben}'s turn, enter x,y: ")
                 if user_input == '':
-                    Running = False
+                    running = False
                     break
                 x, y = map(int, user_input.split(","))
                 if goban.is_valid_move(x, y):
